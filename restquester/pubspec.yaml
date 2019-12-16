@@ -1,7 +1,6 @@
 name: restquester
 description: Package simplifying rest requests
 version: 0.5.0
-author: Jakub Neukirch
 homepage: stonks.pl
 
 environment:
