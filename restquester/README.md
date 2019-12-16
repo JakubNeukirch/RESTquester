@@ -2,13 +2,53 @@
 
 Package simplifying rest requests
 
-## Getting Started
+## Usage
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+Example for sending post request
+```dart
+    import 'package:restquester/requester.dart';
+    //setting base url for requests
+    RequestBuilder.baseUrl = 'http://localhost:8080/';
+    //Instantiating request body for request
+    final LoginBody body = LoginBody(
+      login: "admin",
+      password: "admin",
+      clientId:
+      "d524c1a0811da49592f841085cc0063eb62b3001252a94542795d1ca9824a941",
+    );
+    //Instantiating RequestBuilder for specified method and post
+    final Response response = await RequestBuilder.post('authorize')
+        //setting mapper which will convert json map into specific data model
+        .withMapper((map) => Response.fromJson(map))
+        //set request body to be sent in request
+        //body should have `toJson` method which returns map of data
+        .withBody(body)
+        //returns Future with converted data model
+        .execute();
+```
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Example request body model
+```dart
+class LoginBody {
+  String login;
+  String password;
+  String clientId;
+
+  LoginBody({this.login, this.password, this.clientId});
+
+  LoginBody.fromJson(Map<String, dynamic> json) {
+    login = json['login'];
+    password = json['password'];
+    clientId = json['clientId'];
+  }
+
+  //needed to be converted to json inside RequestBuilder
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['login'] = this.login;
+    data['password'] = this.password;
+    data['clientId'] = this.clientId;
+    return data;
+  }
+}
+```
