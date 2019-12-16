@@ -6,25 +6,25 @@ Package simplifying rest requests
 
 Example for sending post request
 ```dart
-    import 'package:restquester/requester.dart';
-    //setting base url for requests
-    RequestBuilder.baseUrl = 'http://localhost:8080/';
-    //Instantiating request body for request
-    final LoginBody body = LoginBody(
-      login: "admin",
-      password: "admin",
-      clientId:
-      "d524c1a0811da49592f841085cc0063eb62b3001252a94542795d1ca9824a941",
-    );
-    //Instantiating RequestBuilder for specified method and post
-    final Response response = await RequestBuilder.post('authorize')
-        //setting mapper which will convert json map into specific data model
-        .withMapper((map) => Response.fromJson(map))
-        //set request body to be sent in request
-        //body should have `toJson` method which returns map of data
-        .withBody(body)
-        //returns Future with converted data model
-        .execute();
+  import 'package:restquester/requester.dart';
+  //setting base url for requests
+  RequestBuilder.baseUrl = 'http://localhost:8080/';
+  //Instantiating request body for request
+  final LoginBody body = LoginBody(
+    login: "admin",
+    password: "admin",
+    clientId:
+    "d524c1a0811da49592f841085cc0063eb62b3001252a94542795d1ca9824a941",
+  );
+  //Instantiating RequestBuilder for specified method and post
+  final Response response = await RequestBuilder.post('authorize')
+      //setting mapper which will convert json map into specific data model
+      .withMapper((map) => Response.fromJson(map))
+      //set request body to be sent in request
+      //body should have `toJson` method which returns map of data
+      .withBody(body)
+      //returns Future with converted data model
+      .execute();
 ```
 
 Example request body model
