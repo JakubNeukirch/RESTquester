@@ -2,31 +2,53 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:restquester/scope.dart';
 
 import 'headers.dart';
 
 class RequestBuilder {
-  static String baseUrl;
-  static ContentType defaultContentType = ContentType.json;
-  final String _path;
-  final HttpMethods _method;
+  String _path;
+  HttpMethods _method;
   final HeaderBuilder _headerBuilder = HeaderBuilder();
   JSONMapper _mapper;
   dynamic _body;
+  RequestScope _scope;
 
-  RequestBuilder({String path, HttpMethods method})
-      : _path = path,
-        _method = method;
+  RequestBuilder(String baseUrl, {ContentType defaultContentType}) {
+    _scope = RequestScope.newScope(
+      baseUrl: baseUrl,
+      contentType: defaultContentType,
+    );
+  }
 
-  RequestBuilder.get(this._path) : _method = HttpMethods.get;
+  RequestBuilder.withScope(RequestScope scope)
+      :_scope = scope;
 
-  RequestBuilder.post(this._path) : _method = HttpMethods.post;
+  RequestBuilder request({String path, HttpMethods method}) {
+    _path = path;
+    _method = method;
+    return this;
+  }
 
-  RequestBuilder.delete(this._path) : _method = HttpMethods.delete;
+  RequestBuilder get(String path) {
+    return request(path: path, method: HttpMethods.get);
+  }
 
-  RequestBuilder.put(this._path) : _method = HttpMethods.put;
+  RequestBuilder post(String path) {
+    return request(path: path, method: HttpMethods.post);
+  }
 
-  RequestBuilder.patch(this._path) : _method = HttpMethods.patch;
+  RequestBuilder delete(String path) {
+    return request(path: path, method: HttpMethods.delete);
+  }
+
+  RequestBuilder put(String path) {
+    return request(path: path, method: HttpMethods.put);
+  }
+
+  RequestBuilder patch(String path) {
+    return request(path: path, method: HttpMethods.patch);
+  }
 
   RequestBuilder withBearerAuthorization(String accessToken) {
     _headerBuilder.withBearerAuthorization(accessToken);
@@ -68,11 +90,15 @@ class RequestBuilder {
   }
 
   Future<dynamic> _sendRequest() {
+    assert(_scope.baseUrl != null);
+    assert(_path != null);
     assert(_method != null);
     final url = _buildUrl(_path);
-    final headers = _headerBuilder.build();
+    final headers = _headerBuilder
+        .withHeaders(_scope.headers)
+        .build();
     headers.putIfAbsent(
-        HttpHeaders.contentTypeHeader, () => defaultContentType.value);
+        HttpHeaders.contentTypeHeader, () => _scope.contentType.value);
     switch (_method) {
       case HttpMethods.get:
         return http.get(
@@ -115,9 +141,9 @@ class RequestBuilder {
   }
 
   String _buildUrl(String path) {
-    assert(baseUrl != null);
-    assert(baseUrl.endsWith('/'));
-    return "$baseUrl$path";
+    assert(_scope.baseUrl != null);
+    assert(_scope.baseUrl.endsWith('/'));
+    return "${_scope.baseUrl}$path";
   }
 }
 

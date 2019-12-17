@@ -6,14 +6,16 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:restquester/requester.dart';
+import 'package:restquester/scope.dart';
 
 import 'model.dart';
 
 void main() {
   test('Test request', () async {
-    RequestBuilder.baseUrl = 'https://api.github.com/';
-    final Response response = await RequestBuilder.get('orgs/octokit')
+    Response response = await RequestScope
+        .newScope(baseUrl: 'https://api.github.com/')
+        .newRequestBuilder()
+        .get('orgs/octokit')
         .withMapper((map) => Response.fromJson(map))
         .execute();
     print("${response.login}");

@@ -1,7 +1,7 @@
 library example;
 
 import 'package:flutter/material.dart';
-import 'package:restquester/requester.dart';
+import 'package:restquester/scope.dart';
 
 void main() {
   runApp(App());
@@ -24,7 +24,8 @@ class Content extends StatefulWidget {
 }
 
 class ContentState extends State<Content> {
-
+  final RequestScope _scope = RequestScope.newScope(
+      baseUrl: 'https://api.github.com/');
   String _text = "";
 
   @override
@@ -51,9 +52,10 @@ class ContentState extends State<Content> {
   }
 
   Future<String> getCompanyName() async {
-    RequestBuilder.baseUrl = 'https://api.github.com/';
     //Instantiating request body for request
-    final Response response = await RequestBuilder.get('orgs/octokit')
+    final Response response = await _scope
+        .newRequestBuilder()
+        .get('orgs/octokit')
         .withMapper((map) => Response.fromJson(map))
         .execute();
     return response.login;

@@ -18,6 +18,11 @@ class HeaderBuilder {
     return this;
   }
 
+  HeaderBuilder withHeaders(Map<String, String> headers) {
+    _headers.addAll(headers);
+    return this;
+  }
+
   Map<String, String> build() {
     return _headers;
   }
