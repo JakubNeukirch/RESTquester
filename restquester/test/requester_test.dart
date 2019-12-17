@@ -20,25 +20,3 @@ void main() {
     assert(response != null);
   });
 }
-
-class LoginBody {
-  String login;
-  String password;
-  String clientId;
-
-  LoginBody({this.login, this.password, this.clientId});
-
-  LoginBody.fromJson(Map<String, dynamic> json) {
-    login = json['login'];
-    password = json['password'];
-    clientId = json['clientId'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['login'] = this.login;
-    data['password'] = this.password;
-    data['clientId'] = this.clientId;
-    return data;
-  }
-}
