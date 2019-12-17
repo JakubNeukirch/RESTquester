@@ -2,57 +2,95 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:restquester/scope.dart';
 
 import 'headers.dart';
 
 class RequestBuilder {
-  static String baseUrl;
-  static ContentType defaultContentType = ContentType.json;
-  final String _path;
-  final HttpMethods _method;
+  String _path;
+  HttpMethods _method;
   final HeaderBuilder _headerBuilder = HeaderBuilder();
   JSONMapper _mapper;
   dynamic _body;
+  RequestScope _scope;
 
-  RequestBuilder({String path, HttpMethods method})
-      : _path = path,
-        _method = method;
+  ///Constructor which instantiates default RequestScope with provided data
+  RequestBuilder(String baseUrl, {ContentType defaultContentType}) {
+    _scope = RequestScope.newScope(
+      baseUrl: baseUrl,
+      contentType: defaultContentType,
+    );
+  }
 
-  RequestBuilder.get(this._path) : _method = HttpMethods.get;
+  ///Constructor which uses specified RequestScope
+  RequestBuilder.withScope(RequestScope scope)
+      :_scope = scope;
 
-  RequestBuilder.post(this._path) : _method = HttpMethods.post;
+  ///Sets up custom request
+  RequestBuilder request({String path, HttpMethods method}) {
+    _path = path;
+    _method = method;
+    return this;
+  }
 
-  RequestBuilder.delete(this._path) : _method = HttpMethods.delete;
+  ///Sets up get request
+  RequestBuilder get(String path) {
+    return request(path: path, method: HttpMethods.get);
+  }
 
-  RequestBuilder.put(this._path) : _method = HttpMethods.put;
+  ///Sets up post request
+  RequestBuilder post(String path) {
+    return request(path: path, method: HttpMethods.post);
+  }
 
-  RequestBuilder.patch(this._path) : _method = HttpMethods.patch;
+  ///Sets up delete request
+  RequestBuilder delete(String path) {
+    return request(path: path, method: HttpMethods.delete);
+  }
 
+  ///Sets up put request
+  RequestBuilder put(String path) {
+    return request(path: path, method: HttpMethods.put);
+  }
+
+  ///Sets up patch request
+  RequestBuilder patch(String path) {
+    return request(path: path, method: HttpMethods.patch);
+  }
+
+  ///Sets bearer authorization for request
   RequestBuilder withBearerAuthorization(String accessToken) {
     _headerBuilder.withBearerAuthorization(accessToken);
     return this;
   }
 
+  ///sets content type of request
   RequestBuilder withContentType(ContentType contentType) {
     _headerBuilder.withContentType(contentType);
     return this;
   }
 
+  ///adds header to request
   RequestBuilder withHeader(String key, String value) {
     _headerBuilder.withHeader(key, value);
     return this;
   }
 
+  ///Sets mapper
+  ///Mapper is taking Map of json values and instantiates data model which will
+  ///be returned by request
   RequestBuilder withMapper(JSONMapper mapper) {
     _mapper = mapper;
     return this;
   }
 
+  ///Sets request body
   RequestBuilder withBody(dynamic body) {
     _body = body;
     return this;
   }
 
+  ///Sends request and return Future with value mapped with `JSONMapper`
   Future<dynamic> execute() {
     return _sendRequest()
         .then((response) => jsonDecode(response.body))
@@ -68,11 +106,15 @@ class RequestBuilder {
   }
 
   Future<dynamic> _sendRequest() {
+    assert(_scope.baseUrl != null);
+    assert(_path != null);
     assert(_method != null);
     final url = _buildUrl(_path);
-    final headers = _headerBuilder.build();
+    final headers = _headerBuilder
+        .withHeaders(_scope.headers)
+        .build();
     headers.putIfAbsent(
-        HttpHeaders.contentTypeHeader, () => defaultContentType.value);
+        HttpHeaders.contentTypeHeader, () => _scope.contentType.value);
     switch (_method) {
       case HttpMethods.get:
         return http.get(
@@ -115,9 +157,9 @@ class RequestBuilder {
   }
 
   String _buildUrl(String path) {
-    assert(baseUrl != null);
-    assert(baseUrl.endsWith('/'));
-    return "$baseUrl$path";
+    assert(_scope.baseUrl != null);
+    assert(_scope.baseUrl.endsWith('/'));
+    return "${_scope.baseUrl}$path";
   }
 }
 

@@ -7,17 +7,21 @@ Package simplifying rest requests
 Example for sending post request
 ```dart
   import 'package:restquester/requester.dart';
-  //setting base url for requests
-  RequestBuilder.baseUrl = 'http://localhost:8080/';
+
+  //create scope for localhost api
+  RequestScope scope = RequestScope
+        .newScope(baseUrl: 'https://localhost:8080/');
   //Instantiating request body for request
   final LoginBody body = LoginBody(
     login: "admin",
     password: "admin",
     clientId:
-    "d524c1a0811da49592f841085cc0063eb62b3001252a94542795d1ca9824a941",
+    "d524c1a0811dt35692f841085cc0063eb62b902735a94542795d1ca9824a941",
   );
   //Instantiating RequestBuilder for specified method and post
-  final Response response = await RequestBuilder.post('authorize')
+  final Response response = await scope
+      .newRequestBuilder()
+      .post('authorize')
       //setting mapper which will convert json map into specific data model
       .withMapper((map) => Response.fromJson(map))
       //set request body to be sent in request
