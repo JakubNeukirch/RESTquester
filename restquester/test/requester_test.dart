@@ -11,9 +11,11 @@ import 'package:restquester/scope.dart';
 import 'model.dart';
 
 void main() {
+  RequestScope scope;
   test('Test request', () async {
-    Response response = await RequestScope
-        .newScope(baseUrl: 'https://api.github.com/')
+    scope = RequestScope
+        .newScope(baseUrl: 'https://api.github.com/');
+    Response response = await scope
         .newRequestBuilder()
         .get('orgs/octokit')
         .withMapper((map) => Response.fromJson(map))

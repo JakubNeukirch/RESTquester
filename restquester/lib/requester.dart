@@ -14,6 +14,7 @@ class RequestBuilder {
   dynamic _body;
   RequestScope _scope;
 
+  ///Constructor which instantiates default RequestScope with provided data
   RequestBuilder(String baseUrl, {ContentType defaultContentType}) {
     _scope = RequestScope.newScope(
       baseUrl: baseUrl,
@@ -21,60 +22,75 @@ class RequestBuilder {
     );
   }
 
+  ///Constructor which uses specified RequestScope
   RequestBuilder.withScope(RequestScope scope)
       :_scope = scope;
 
+  ///Sets up custom request
   RequestBuilder request({String path, HttpMethods method}) {
     _path = path;
     _method = method;
     return this;
   }
 
+  ///Sets up get request
   RequestBuilder get(String path) {
     return request(path: path, method: HttpMethods.get);
   }
 
+  ///Sets up post request
   RequestBuilder post(String path) {
     return request(path: path, method: HttpMethods.post);
   }
 
+  ///Sets up delete request
   RequestBuilder delete(String path) {
     return request(path: path, method: HttpMethods.delete);
   }
 
+  ///Sets up put request
   RequestBuilder put(String path) {
     return request(path: path, method: HttpMethods.put);
   }
 
+  ///Sets up patch request
   RequestBuilder patch(String path) {
     return request(path: path, method: HttpMethods.patch);
   }
 
+  ///Sets bearer authorization for request
   RequestBuilder withBearerAuthorization(String accessToken) {
     _headerBuilder.withBearerAuthorization(accessToken);
     return this;
   }
 
+  ///sets content type of request
   RequestBuilder withContentType(ContentType contentType) {
     _headerBuilder.withContentType(contentType);
     return this;
   }
 
+  ///adds header to request
   RequestBuilder withHeader(String key, String value) {
     _headerBuilder.withHeader(key, value);
     return this;
   }
 
+  ///Sets mapper
+  ///Mapper is taking Map of json values and instantiates data model which will
+  ///be returned by request
   RequestBuilder withMapper(JSONMapper mapper) {
     _mapper = mapper;
     return this;
   }
 
+  ///Sets request body
   RequestBuilder withBody(dynamic body) {
     _body = body;
     return this;
   }
 
+  ///Sends request and return Future with value mapped with `JSONMapper`
   Future<dynamic> execute() {
     return _sendRequest()
         .then((response) => jsonDecode(response.body))
