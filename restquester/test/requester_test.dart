@@ -23,4 +23,21 @@ void main() {
     print("${response.login}");
     assert(response != null);
   });
+  test('Test request2', () async {
+    var response = await scope
+        .newRequestBuilder()
+        .get('orgs/octokit/repos')
+        .withMapper((list) => list, isList: true)
+        .execute();
+    print("${response}");
+    assert(response != null);
+  });
+  test('Test request3', () async {
+    var response = await scope
+        .newRequestBuilder()
+        .get('orgs/octokit/repos')
+        .execute();
+    print("${response}");
+    assert(response != null);
+  });
 }
