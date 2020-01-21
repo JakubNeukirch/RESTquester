@@ -82,6 +82,7 @@ class RequestBuilder {
   ///be returned by request
   RequestBuilder withMapper(JSONMapper mapper, {bool isList = false}) {
     _mapper = mapper;
+    _isList = isList;
     return this;
   }
 
