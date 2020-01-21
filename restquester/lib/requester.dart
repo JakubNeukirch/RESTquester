@@ -11,6 +11,7 @@ class RequestBuilder {
   HttpMethods _method;
   final HeaderBuilder _headerBuilder = HeaderBuilder();
   JSONMapper _mapper;
+  bool _isList = false;
   dynamic _body;
   RequestScope _scope;
 
@@ -79,7 +80,7 @@ class RequestBuilder {
   ///Sets mapper
   ///Mapper is taking Map of json values and instantiates data model which will
   ///be returned by request
-  RequestBuilder withMapper(JSONMapper mapper) {
+  RequestBuilder withMapper(JSONMapper mapper, {bool isList = false}) {
     _mapper = mapper;
     return this;
   }
@@ -92,9 +93,15 @@ class RequestBuilder {
 
   ///Sends request and return Future with value mapped with `JSONMapper`
   Future<T> execute<T>() {
-    return _sendRequest()
-        .then((response) => jsonDecode(response.body))
-        .then((data) => _map(data) as T);
+    if (_mapper != null) {
+      return _sendRequest()
+          .then((response) =>
+      _isList ? response.body : jsonDecode(
+          response.body)) //todo safety, ignore if no mapper
+          .then((data) => _map(data) as T);
+    } else {
+      return _sendRequest();
+    }
   }
 
   dynamic _map(dynamic data) {

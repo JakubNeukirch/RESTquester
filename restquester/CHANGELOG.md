@@ -11,3 +11,7 @@
 ## [0.5.2] - 21.01.2020
 
 * Change Mapper parameter type to dynamic - allow mapping lists
+
+## [0.5.3] - 21.01.2020
+
+* Fix list mapping
