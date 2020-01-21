@@ -7,3 +7,7 @@
 * Added RequestScope to set some default values for request from specified scope
 * Rearranged RequestBuilder
 * Added example usage
+
+## [0.5.2] - 21.01.2020
+
+* Change Mapper parameter type to dynamic - allow mapping lists

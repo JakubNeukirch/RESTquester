@@ -91,10 +91,10 @@ class RequestBuilder {
   }
 
   ///Sends request and return Future with value mapped with `JSONMapper`
-  Future<dynamic> execute() {
+  Future<T> execute<T>() {
     return _sendRequest()
         .then((response) => jsonDecode(response.body))
-        .then((data) => _map(data));
+        .then((data) => _map(data) as T);
   }
 
   dynamic _map(dynamic data) {
@@ -163,6 +163,6 @@ class RequestBuilder {
   }
 }
 
-typedef T JSONMapper<T>(Map jsonMap);
+typedef T JSONMapper<T>(dynamic jsonMap);
 
 enum HttpMethods { get, post, delete, put, patch }
