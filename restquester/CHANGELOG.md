@@ -15,3 +15,7 @@
 ## [0.5.3] - 21.01.2020
 
 * Fix list mapping
+
+## [0.5.4] - 22.01.2020
+
+* Fix list mapping
