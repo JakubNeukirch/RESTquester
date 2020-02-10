@@ -3,6 +3,8 @@ import 'dart:io';
 class HeaderBuilder {
   Map<String, String> _headers = {};
 
+  Map<String, String> get headers => _headers;
+
   HeaderBuilder withBearerAuthorization(String accessToken) {
     _headers[HttpHeaders.authorizationHeader] = "Bearer $accessToken";
     return this;

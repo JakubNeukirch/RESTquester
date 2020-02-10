@@ -14,6 +14,7 @@ class RequestBuilder {
   bool _isList = false;
   dynamic _body;
   RequestScope _scope;
+  LoggingType _loggingType = LoggingType.none;
 
   ///Constructor which instantiates default RequestScope with provided data
   RequestBuilder(String baseUrl, {ContentType defaultContentType}) {
@@ -59,6 +60,11 @@ class RequestBuilder {
     return request(path: path, method: HttpMethods.patch);
   }
 
+  RequestBuilder withLoggingType(LoggingType loggingType) {
+    _loggingType = loggingType;
+    return this;
+  }
+
   ///Sets bearer authorization for request
   RequestBuilder withBearerAuthorization(String accessToken) {
     _headerBuilder.withBearerAuthorization(accessToken);
@@ -94,14 +100,38 @@ class RequestBuilder {
 
   ///Sends request and return Future with value mapped with `JSONMapper`
   Future<T> execute<T>() {
+    _preLog();
     if (_mapper != null) {
       return _sendRequest()
           .then((response) =>
       _isList ? response.body : jsonDecode(
           response.body)) //todo safety, ignore if no mapper
+          .then((data) {
+        _postLog(data);
+        return data;
+      })
           .then((data) => _map(data) as T);
     } else {
       return _sendRequest();
+    }
+  }
+
+  void _postLog(dynamic responseBody) {
+    if (_loggingType == LoggingType.body || _loggingType == LoggingType.all) {
+      print("Response Body: $responseBody");
+    }
+  }
+
+  void _preLog() {
+    if (_loggingType != LoggingType.none) {
+      print("URL: $_path");
+      print("Method: $_method");
+    }
+    if (_loggingType == LoggingType.all) {
+      print("Headers: ${_headerBuilder.headers}");
+    }
+    if (_loggingType == LoggingType.body || _loggingType == LoggingType.all) {
+      print("Request Body: $_body");
     }
   }
 
@@ -174,3 +204,5 @@ class RequestBuilder {
 typedef T JSONMapper<T>(dynamic jsonMap);
 
 enum HttpMethods { get, post, delete, put, patch }
+
+enum LoggingType { none, body, all }
