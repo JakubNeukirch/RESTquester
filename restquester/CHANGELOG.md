@@ -19,3 +19,7 @@
 ## [0.5.4] - 22.01.2020
 
 * Fix list mapping
+
+## [0.5.5] - 10.02.2020
+
+* Add logging possibility

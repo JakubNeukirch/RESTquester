@@ -6,6 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:restquester/requester.dart';
 import 'package:restquester/scope.dart';
 
 import 'model.dart';
@@ -19,6 +20,7 @@ void main() {
         .newRequestBuilder()
         .get('orgs/octokit')
         .withMapper((map) => Response.fromJson(map))
+        .withLoggingType(LoggingType.all)
         .execute();
     print("${response.login}");
     assert(response != null);
