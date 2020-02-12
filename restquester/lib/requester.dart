@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:restquester/scope.dart';
 
 import 'headers.dart';
@@ -15,6 +16,7 @@ class RequestBuilder {
   dynamic _body;
   RequestScope _scope;
   LoggingType _loggingType = LoggingType.none;
+  ErrorHandler _errorHandler;
 
   ///Constructor which instantiates default RequestScope with provided data
   RequestBuilder(String baseUrl, {ContentType defaultContentType}) {
@@ -92,6 +94,11 @@ class RequestBuilder {
     return this;
   }
 
+  RequestBuilder withErrorHandler(ErrorHandler errorHandler) {
+    _errorHandler = errorHandler;
+    return this;
+  }
+
   ///Sets request body
   RequestBuilder withBody(dynamic body) {
     _body = body;
@@ -103,16 +110,27 @@ class RequestBuilder {
     _preLog();
     if (_mapper != null) {
       return _sendRequest()
-          .then((response) =>
-      _isList ? response.body : jsonDecode(
-          response.body)) //todo safety, ignore if no mapper
+          .then((Response response) {
+        return RestquesterResponse(
+            response.statusCode,
+            _isList ? response.body : jsonDecode(
+                response.body)
+        );
+      }
+      ) //todo safety, ignore if no mapper
           .then((data) {
-        _postLog(data);
+        _postLog(data.responseBody);
         return data;
       })
-          .then((data) => _map(data) as T);
+          .then((data) {
+        if (data.statusCode < 300) {
+          return _map(data.responseBody) as T;
+        } else {
+          return _errorHandler(data);
+        }
+      });
     } else {
-      return _sendRequest();
+      return _sendRequest() as dynamic;
     }
   }
 
@@ -143,7 +161,7 @@ class RequestBuilder {
     }
   }
 
-  Future<dynamic> _sendRequest() {
+  Future<Response> _sendRequest() {
     assert(_scope.baseUrl != null);
     assert(_path != null);
     assert(_method != null);
@@ -203,6 +221,15 @@ class RequestBuilder {
 
 typedef T JSONMapper<T>(dynamic jsonMap);
 
+typedef T ErrorHandler<T>(RestquesterResponse error);
+
 enum HttpMethods { get, post, delete, put, patch }
 
 enum LoggingType { none, body, all }
+
+class RestquesterResponse {
+  final int statusCode;
+  final dynamic responseBody;
+
+  RestquesterResponse(this.statusCode, this.responseBody);
+}

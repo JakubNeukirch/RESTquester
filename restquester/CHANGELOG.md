@@ -23,3 +23,7 @@
 ## [0.5.5] - 10.02.2020
 
 * Add logging possibility
+
+## [0.6.0] - 12.02.2020
+
+* Add error handling
