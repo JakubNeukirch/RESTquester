@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:restquester/scope.dart';
 
 import 'headers.dart';
@@ -27,8 +26,7 @@ class RequestBuilder {
   }
 
   ///Constructor which uses specified RequestScope
-  RequestBuilder.withScope(RequestScope scope)
-      :_scope = scope;
+  RequestBuilder.withScope(RequestScope scope) : _scope = scope;
 
   ///Sets up custom request
   RequestBuilder request({String path, HttpMethods method}) {
@@ -166,9 +164,7 @@ class RequestBuilder {
     assert(_path != null);
     assert(_method != null);
     final url = _buildUrl(_path);
-    final headers = _headerBuilder
-        .withHeaders(_scope.headers)
-        .build();
+    final headers = _headerBuilder.withHeaders(_scope.headers).build();
     headers.putIfAbsent(
         HttpHeaders.contentTypeHeader, () => _scope.contentType.value);
     switch (_method) {

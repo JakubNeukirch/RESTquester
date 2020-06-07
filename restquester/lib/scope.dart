@@ -21,10 +21,7 @@ class RequestScope {
   RequestScope(this.baseUrl, [this.contentType]);
 
   ///Base url and default content type
-  RequestScope.newScope({
-    @required String baseUrl,
-    ContentType contentType
-  })
+  RequestScope.newScope({@required String baseUrl, ContentType contentType})
       : this.baseUrl = baseUrl,
         this.contentType = contentType ?? ContentType.json;
 
@@ -38,5 +35,4 @@ class RequestScope {
   RequestBuilder newRequestBuilder() {
     return RequestBuilder.withScope(this);
   }
-
 }
