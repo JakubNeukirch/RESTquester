@@ -25,8 +25,7 @@ class RequestBuilder {
   }
 
   ///Constructor which uses specified RequestScope
-  RequestBuilder.withScope(RequestScope scope)
-      :_scope = scope;
+  RequestBuilder.withScope(RequestScope scope) : _scope = scope;
 
   ///Sets up custom request
   RequestBuilder request({String path, HttpMethods method}) {
@@ -104,13 +103,13 @@ class RequestBuilder {
     if (_mapper != null) {
       return _sendRequest()
           .then((response) =>
-      _isList ? response.body : jsonDecode(
-          response.body)) //todo safety, ignore if no mapper
+      _isList
+          ? response.body
+          : jsonDecode(response.body)) //todo safety, ignore if no mapper
           .then((data) {
         _postLog(data);
         return data;
-      })
-          .then((data) => _map(data) as T);
+      }).then((data) => _map(data) as T);
     } else {
       return _sendRequest();
     }
@@ -148,9 +147,7 @@ class RequestBuilder {
     assert(_path != null);
     assert(_method != null);
     final url = _buildUrl(_path);
-    final headers = _headerBuilder
-        .withHeaders(_scope.headers)
-        .build();
+    final headers = _headerBuilder.withHeaders(_scope.headers).build();
     headers.putIfAbsent(
         HttpHeaders.contentTypeHeader, () => _scope.contentType.value);
     switch (_method) {
