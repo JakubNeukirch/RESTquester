@@ -1,6 +1,6 @@
 name: restquester
 description: Package simplifying rest requests. It is wrapping basic http requests providing additional functionality like mapping json to data model.
-version: 0.6.0
+version: 0.6.1
 homepage: https://stonks.pl
 
 environment:
