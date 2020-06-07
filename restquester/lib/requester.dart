@@ -108,7 +108,7 @@ class RequestBuilder {
     _preLog();
     if (_mapper != null) {
       return _sendRequest()
-          .then((Response response) {
+          .then((response) {
         return RestquesterResponse(
             response.statusCode,
             _isList ? response.body : jsonDecode(
@@ -159,7 +159,7 @@ class RequestBuilder {
     }
   }
 
-  Future<Response> _sendRequest() {
+  Future<http.Response> _sendRequest() {
     assert(_scope.baseUrl != null);
     assert(_path != null);
     assert(_method != null);
